@@ -1,0 +1,60 @@
+# Setup
+c-->from importlib import reload
+c-->import q1solution
+c-->reload(q1solution)
+c-->from q1solution import function_cycler, jobs, rank, popular, who, by_job, by_skill
+c-->from goody import irange
+
+# Test function_cycler
+^-->function_cycler()-->TypeError
+c-->cycler1 = function_cycler( (lambda x : x), (lambda x : x**2))
+c-->cycler2 = function_cycler( (lambda x : x+1), (lambda x : 2*x), (lambda x : x**2))
+e-->[cycler1(x) for x in irange(1,10)]-->[1, 4, 3, 16, 5, 36, 7, 64, 9, 100]
+e-->cycler1.times_called-->10
+e-->[cycler2(x) for x in irange(1,10)]-->[2, 4, 9, 5, 10, 36, 8, 16, 81, 11]
+e-->cycler2.times_called-->10
+e-->[cycler1(x) for x in irange(10,15)]-->[10, 121, 12, 169, 14, 225]
+e-->cycler1.times_called-->16
+e-->[cycler2(x) for x in irange(10,20)]-->[20, 121, 13, 26, 196, 16, 32, 289, 19, 38, 400]
+e-->cycler2.times_called-->21
+
+# Test jobs
+c-->db1 = {'Diane':   {'Laundry': 2,   'Cleaning': 4, 'Gardening': 3},'Betty':   {'Gardening': 2, 'Tutoring': 1, 'Cleaning': 3}, 'Charles': {'Plumbing': 2,  'Cleaning': 5}, 'Adam': {'Cleaning': 4,  'Tutoring': 2, 'Baking': 1}}
+c-->db2 = {'Adam': {'Laundry': 2, 'Driving': 2, 'Tutoring': 2, 'Reading': 1, 'Gardening': 1}, 'Emil': {'Errands': 4, 'Driving': 1, 'Baking': 3}, 'Chad': {'Repairing': 2, 'Reading': 2, 'Errands': 4, 'Baking': 2}, 'Ivan': {'Gardening': 5, 'Errands': 5, 'Reading': 4, 'Cleaning': 3}, 'Gene': {'Driving': 1, 'Laundry': 1, 'Baking': 2, 'Gardening': 2, 'Repairing': 2, 'Errands': 5}, 'Dana': {'Driving': 2}, 'Hope': {'Driving': 5, 'Reading': 3, 'Errands': 2, 'Shopping': 2, 'Gardening': 1, 'Laundry': 2}, 'Bree': {'Baking': 2, 'Errands': 5}, 'Faye': {'Tutoring': 2, 'Reading': 5, 'Repairing': 5, 'Baking': 4}}
+==-->jobs(db1,0)-->{'Cleaning', 'Plumbing', 'Baking', 'Gardening', 'Tutoring', 'Laundry'}
+==-->jobs(db1,3)-->{'Cleaning', 'Gardening'}
+==-->jobs(db2,0)-->{'Cleaning', 'Driving', 'Shopping', 'Baking', 'Tutoring', 'Gardening', 'Reading', 'Laundry', 'Repairing', 'Errands'}
+==-->jobs(db2,5)-->{'Driving', 'Gardening', 'Reading', 'Repairing', 'Errands'}
+
+
+# Test rank
+c-->db1 = {'Diane':   {'Laundry': 2,   'Cleaning': 4, 'Gardening': 3},'Betty':   {'Gardening': 2, 'Tutoring': 1, 'Cleaning': 3}, 'Charles': {'Plumbing': 2,  'Cleaning': 5}, 'Adam': {'Cleaning': 4,  'Tutoring': 2, 'Baking': 1}}
+e-->rank(db1)-->['Charles', 'Diane', 'Adam', 'Betty']
+e-->rank(db2)-->['Ivan', 'Faye', 'Bree', 'Emil', 'Chad', 'Hope', 'Gene', 'Dana', 'Adam']
+
+# Test popular
+e-->popular(db1)-->['Cleaning', 'Gardening', 'Tutoring', 'Baking', 'Laundry', 'Plumbing']
+e-->popular(db2)-->['Errands', 'Baking', 'Driving', 'Reading', 'Gardening', 'Laundry', 'Repairing', 'Tutoring', 'Cleaning', 'Shopping']
+
+# Test who
+c-->db1 = {'Diane':   {'Laundry': 2,   'Cleaning': 4, 'Gardening': 3},'Betty':   {'Gardening': 2, 'Tutoring': 1, 'Cleaning': 3}, 'Charles': {'Plumbing': 2,  'Cleaning': 5}, 'Adam': {'Cleaning': 4,  'Tutoring': 2, 'Baking': 1}}
+e-->who(db1,'Cleaning',4)-->[('Charles', 5), ('Adam', 4), ('Diane', 4)]
+e-->who(db1,'Gardening',0)-->[('Diane', 3), ('Betty', 2)]
+e-->who(db1,'Tutoring',3)-->[]
+e-->who(db1,'Gambling',0)-->[]
+e-->who(db2,'Baking',0)-->[('Faye', 4), ('Emil', 3), ('Bree', 2), ('Chad', 2), ('Gene', 2)]
+e-->who(db2,'Cleaning',1)-->[('Ivan', 3)]
+e-->who(db2,'Driving',2)-->[('Hope', 5), ('Adam', 2), ('Dana', 2)]
+e-->who(db2,'Errands',3)-->[('Bree', 5), ('Gene', 5), ('Ivan', 5), ('Chad', 4), ('Emil', 4)]
+e-->who(db2,'Gardening',4)-->[('Ivan', 5)]
+e-->who(db2,'Laundry',5)-->[]
+
+# Test by_job
+c-->db1 = {'Diane':   {'Laundry': 2,   'Cleaning': 4, 'Gardening': 3},'Betty':   {'Gardening': 2, 'Tutoring': 1, 'Cleaning': 3}, 'Charles': {'Plumbing': 2,  'Cleaning': 5}, 'Adam': {'Cleaning': 4,  'Tutoring': 2, 'Baking': 1}}
+==-->by_job(db1)-->{'Cleaning': {'Adam': 4, 'Betty': 3, 'Charles': 5, 'Diane': 4}, 'Tutoring': {'Adam': 2, 'Betty': 1}, 'Baking': {'Adam': 1}, 'Gardening': {'Betty': 2, 'Diane': 3}, 'Plumbing': {'Charles': 2}, 'Laundry': {'Diane': 2}}
+==-->by_job(db2)-->{'Laundry': {'Adam': 2, 'Gene': 1, 'Hope': 2}, 'Driving': {'Adam': 2, 'Emil': 1, 'Gene': 1, 'Dana': 2, 'Hope': 5}, 'Tutoring': {'Adam': 2, 'Faye': 2}, 'Reading': {'Adam': 1, 'Chad': 2, 'Ivan': 4, 'Hope': 3, 'Faye': 5}, 'Gardening': {'Adam': 1, 'Ivan': 5, 'Gene': 2, 'Hope': 1}, 'Errands': {'Emil': 4, 'Chad': 4, 'Ivan': 5, 'Gene': 5, 'Hope': 2, 'Bree': 5}, 'Baking': {'Emil': 3, 'Chad': 2, 'Gene': 2, 'Bree': 2, 'Faye': 4}, 'Repairing': {'Chad': 2, 'Gene': 2, 'Faye': 5}, 'Cleaning': {'Ivan': 3}, 'Shopping': {'Hope': 2}}
+
+# Test by_skill
+c-->db1 = {'Diane':   {'Laundry': 2,   'Cleaning': 4, 'Gardening': 3},'Betty':   {'Gardening': 2, 'Tutoring': 1, 'Cleaning': 3}, 'Charles': {'Plumbing': 2,  'Cleaning': 5}, 'Adam': {'Cleaning': 4,  'Tutoring': 2, 'Baking': 1}}
+e-->by_skill(db1)-->[(5, [('Cleaning', ['Charles'])]), (4, [('Cleaning', ['Adam', 'Diane'])]), (3, [('Cleaning', ['Betty']), ('Gardening', ['Diane'])]), (2, [('Gardening', ['Betty']), ('Laundry', ['Diane']), ('Plumbing', ['Charles']), ('Tutoring', ['Adam'])]), (1, [('Baking', ['Adam']), ('Tutoring', ['Betty'])])]
+e-->by_skill(db2)-->[(5, [('Driving', ['Hope']), ('Errands', ['Bree', 'Gene', 'Ivan']), ('Gardening', ['Ivan']), ('Reading', ['Faye']), ('Repairing', ['Faye'])]), (4, [('Baking', ['Faye']), ('Errands', ['Chad', 'Emil']), ('Reading', ['Ivan'])]), (3, [('Baking', ['Emil']), ('Cleaning', ['Ivan']), ('Reading', ['Hope'])]), (2, [('Baking', ['Bree', 'Chad', 'Gene']), ('Driving', ['Adam', 'Dana']), ('Errands', ['Hope']), ('Gardening', ['Gene']), ('Laundry', ['Adam', 'Hope']), ('Reading', ['Chad']), ('Repairing', ['Chad', 'Gene']), ('Shopping', ['Hope']), ('Tutoring', ['Adam', 'Faye'])]), (1, [('Driving', ['Emil', 'Gene']), ('Gardening', ['Adam', 'Hope']), ('Laundry', ['Gene']), ('Reading', ['Adam'])])]
